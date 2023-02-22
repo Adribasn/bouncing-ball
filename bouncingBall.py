@@ -1,5 +1,5 @@
 import pygame, sys
-import math
+import pygame.gfxdraw
 
 #general variables
 screenWidth = 1280
@@ -30,7 +30,7 @@ innerBox = pygame.Rect((screenWidth - innerBoxSize) / 2, (screenHeight - innerBo
 
 ballPos = pygame.math.Vector2(screenWidth/2, screenHeight/2)
 ballV0 = pygame.math.Vector2(0, -10)
-ball = Ball(ballPos, 15, ballV0)
+ball = Ball(ballPos, 20, ballV0)
 
 while True:
     for event in pygame.event.get():
@@ -49,25 +49,20 @@ while True:
     #bottom
     if ball.pos.y + ball.radius + ball.velocity.y >= ((screenHeight - innerBoxSize) / 2 + innerBoxSize):
         ball.pos.y = ((screenHeight - innerBoxSize) / 2 + innerBoxSize) - ball.radius 
-        print(str(ball.pos.y))
         ball.velocity.y *= -1
         ball.velocity.y *= kineticEfficiency
         if abs(ball.pos.y - (ball.pos.y + ball.velocity.y)) < threshold:
             ball.velocity.y = 0
     #top
     elif ball.pos.y - ball.radius + ball.velocity.y <= ((screenHeight - innerBoxSize) / 2):
-        print('top bounce')
-        print(str(((screenHeight - innerBoxSize) / 2) + ball.radius))
         ball.pos.y = ((screenHeight - innerBoxSize) / 2) + ball.radius
-        print(str(ball.pos.y))
         ball.velocity.y *= -1
         ball.velocity.y *= kineticEfficiency
     else:
         ball.pos += ball.velocity
-        print(str(ball.pos))
     
-
-        
-    pygame.draw.circle(screen, (255, 0, 0), (ball.pos), ball.radius)
+    #pygame.draw.circle(screen, (255, 0, 0), (ball.pos), ball.radius)
+    pygame.gfxdraw.aacircle(screen, int(ball.pos.x), int(ball.pos.y), ball.radius, (255, 0, 0))
+    pygame.gfxdraw.filled_circle(screen, int(ball.pos.x), int(ball.pos.y), ball.radius, (255, 0, 0))
     pygame.display.update()
     clock.tick(fps)
