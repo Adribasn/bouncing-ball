@@ -13,6 +13,7 @@ innerBoxSize = outerBoxSize - boxBorder
 #physics variables
 gravity = 9.81
 kineticEfficiency = .8
+threshold = .75
 
 class Ball():
     def __init__(self, pos, radius, v0):
@@ -28,7 +29,7 @@ outerBox = pygame.Rect((screenWidth - outerBoxSize) / 2, (screenHeight - outerBo
 innerBox = pygame.Rect((screenWidth - innerBoxSize) / 2, (screenHeight - innerBoxSize) / 2, innerBoxSize, innerBoxSize)
 
 ballPos = pygame.math.Vector2(screenWidth/2, screenHeight/2)
-ballV0 = pygame.math.Vector2(0, 0)
+ballV0 = pygame.math.Vector2(0, -10)
 ball = Ball(ballPos, 15, ballV0)
 
 while True:
@@ -41,16 +42,32 @@ while True:
     pygame.draw.rect(screen, (255, 255, 255), outerBox)
     pygame.draw.rect(screen, (0, 0, 0), innerBox)
 
+    #gravitational acceleration
     ball.velocity.y += gravity/60
 
+    #boundaries
+    #bottom
     if ball.pos.y + ball.radius + ball.velocity.y >= ((screenHeight - innerBoxSize) / 2 + innerBoxSize):
-        ball.pos.y = ((screenHeight - innerBoxSize) / 2 + innerBoxSize) - ball.radius
+        ball.pos.y = ((screenHeight - innerBoxSize) / 2 + innerBoxSize) - ball.radius 
+        print(str(ball.pos.y))
+        ball.velocity.y *= -1
+        ball.velocity.y *= kineticEfficiency
+        if abs(ball.pos.y - (ball.pos.y + ball.velocity.y)) < threshold:
+            ball.velocity.y = 0
+    #top
+    elif ball.pos.y - ball.radius + ball.velocity.y <= ((screenHeight - innerBoxSize) / 2):
+        print('top bounce')
+        print(str(((screenHeight - innerBoxSize) / 2) + ball.radius))
+        ball.pos.y = ((screenHeight - innerBoxSize) / 2) + ball.radius
+        print(str(ball.pos.y))
         ball.velocity.y *= -1
         ball.velocity.y *= kineticEfficiency
     else:
         ball.pos += ball.velocity
-        
+        print(str(ball.pos))
+    
 
+        
     pygame.draw.circle(screen, (255, 0, 0), (ball.pos), ball.radius)
     pygame.display.update()
     clock.tick(fps)
